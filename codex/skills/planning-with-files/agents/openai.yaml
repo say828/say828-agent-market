@@ -1,0 +1,4 @@
+interface:
+  display_name: "Planning with Files"
+  short_description: "Plan tasks in markdown files with checkpoints"
+  default_prompt: "Use $planning-with-files to create and maintain a task plan file for this work."

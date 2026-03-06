@@ -21,44 +21,44 @@ jobs:
         run: bun install
 
       - name: Build UI
-        run: bun run --cwd packages/ui build
+        run: bun run --cwd packages/orchestrator-ui build
 
-      - name: Prepare hook build
+      - name: Prepare orchestrator build
         run: |
-          mkdir -p apps/hook/dist
-          cp packages/ui/dist/index.html apps/hook/dist/ui.html
+          mkdir -p apps/orchestrator/dist
+          cp packages/orchestrator-ui/dist/index.html apps/orchestrator/dist/ui.html
 
       - name: Build binaries (cross-compile)
         run: |
-          cd apps/hook
+          cd apps/orchestrator
 
           # Build for each target using Bun's cross-compilation
-          bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile dist/yourturn-darwin-arm64 --minify
-          bun build src/index.ts --compile --target=bun-darwin-x64 --outfile dist/yourturn-darwin-x64 --minify
-          bun build src/index.ts --compile --target=bun-linux-x64 --outfile dist/yourturn-linux-x64 --minify
-          bun build src/index.ts --compile --target=bun-linux-arm64 --outfile dist/yourturn-linux-arm64 --minify
-          bun build src/index.ts --compile --target=bun-windows-x64 --outfile dist/yourturn-windows-x64.exe --minify
+          bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile dist/claude-orchestrator-macos-arm64 --minify
+          bun build src/index.ts --compile --target=bun-darwin-x64 --outfile dist/claude-orchestrator-macos-x64 --minify
+          bun build src/index.ts --compile --target=bun-linux-x64 --outfile dist/claude-orchestrator-linux-x64 --minify
+          bun build src/index.ts --compile --target=bun-linux-arm64 --outfile dist/claude-orchestrator-linux-arm64 --minify
+          bun build src/index.ts --compile --target=bun-windows-x64 --outfile dist/claude-orchestrator-windows-x64.exe --minify
 
       - name: Create archives
         run: |
-          cd apps/hook/dist
+          cd apps/orchestrator/dist
 
           # Unix archives
-          tar -czvf yourturn-darwin-arm64.tar.gz yourturn-darwin-arm64
-          tar -czvf yourturn-darwin-x64.tar.gz yourturn-darwin-x64
-          tar -czvf yourturn-linux-x64.tar.gz yourturn-linux-x64
-          tar -czvf yourturn-linux-arm64.tar.gz yourturn-linux-arm64
+          tar -czvf claude-orchestrator-macos-arm64.tar.gz claude-orchestrator-macos-arm64
+          tar -czvf claude-orchestrator-macos-x64.tar.gz claude-orchestrator-macos-x64
+          tar -czvf claude-orchestrator-linux-x64.tar.gz claude-orchestrator-linux-x64
+          tar -czvf claude-orchestrator-linux-arm64.tar.gz claude-orchestrator-linux-arm64
 
           # Windows archive
-          zip yourturn-windows-x64.zip yourturn-windows-x64.exe
+          zip claude-orchestrator-windows-x64.zip claude-orchestrator-windows-x64.exe
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-binaries
           path: |
-            apps/hook/dist/*.tar.gz
-            apps/hook/dist/*.zip
+            apps/orchestrator/dist/*.tar.gz
+            apps/orchestrator/dist/*.zip
 
   release:
     name: Create Release
