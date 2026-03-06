@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+ROOT_DIR="$(cd "$(dirname "${SCRIPT_PATH}")/../.." && pwd)"
+ENV_FILE="${HOME}/.local/share/say828-agent-market/codex.env"
+if [[ -f "${ENV_FILE}" ]]; then
+  # shellcheck disable=SC1090
+  source "${ENV_FILE}"
+fi
+REAL_CODEX="${CODEX_REAL_BIN:-$(which -a codex | awk 'NR==2 {print; exit}')}"
+INLINE_TMUX_SCRIPT="${ROOT_DIR}/codex/bin/codex-inline-tmux.sh"
+
+if [[ -z "${REAL_CODEX}" || ! -x "${REAL_CODEX}" ]]; then
+  echo "real Codex binary not found" >&2
+  exit 1
+fi
+
+has_passthrough_subcommand() {
+  case "${1:-}" in
+    exec|review|login|logout|mcp|mcp-server|app-server|completion|sandbox|debug|apply|resume|fork|cloud|features|help|-h|--help|-V|--version)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+has_yolo_flag() {
+  local arg
+  for arg in "$@"; do
+    [[ "${arg}" == "--yolo" ]] && return 0
+  done
+  return 1
+}
+
+exec_interactive() {
+  if has_yolo_flag "$@"; then
+    exec "${REAL_CODEX}" "$@"
+  fi
+  exec "${REAL_CODEX}" --yolo "$@"
+}
+
+if has_passthrough_subcommand "${1:-}"; then
+  exec "${REAL_CODEX}" "$@"
+fi
+if [[ -n "${TMUX:-}" ]]; then
+  exec_interactive "$@"
+fi
+if [[ ! -t 0 || ! -t 1 ]]; then
+  exec "${REAL_CODEX}" "$@"
+fi
+
+exec "${INLINE_TMUX_SCRIPT}" "$@"

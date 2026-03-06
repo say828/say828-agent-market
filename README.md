@@ -38,6 +38,8 @@ curl -fsSL https://raw.githubusercontent.com/say828/say828-agent-market/main/scr
 
 - Claude binary 설치: `claude-orchestrator`
 - Codex skills 설치: `planning-with-files`, `codex-hud`
+- Codex interactive wrapper 설치: `~/.local/bin/codex`
+- Codex를 tmux 바깥에서 실행하면 HUD pane이 자동으로 split되어 함께 표시
 
 선택 설치:
 
@@ -53,6 +55,15 @@ Codex skill 설치 위치:
 
 - `~/.codex/skills/planning-with-files`
 - `~/.codex/skills/codex-hud`
+- `~/.local/share/say828-agent-market/repo`
+
+Codex TUI 자동 HUD 동작:
+
+- 인터랙티브 `codex` 실행 시 wrapper가 tmux 세션을 생성
+- 메인 pane에는 실제 Codex TUI가 실행
+- 보조 pane에는 `codex-hud`가 `--watch` 모드로 자동 부착
+- 이미 tmux 안에서 실행 중이면 wrapper는 기존 세션을 존중하고 HUD pane을 새로 만들지 않음
+- 수동 HUD 스크립트 실행 없이 `codex` 시작만으로 HUD가 함께 붙는 구성이 기본값
 
 ## 현재 플러그인
 

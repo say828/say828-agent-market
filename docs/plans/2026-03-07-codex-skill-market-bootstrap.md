@@ -46,6 +46,10 @@
 - 2026-03-07 12:11 - Added legacy Claude release asset fallback to the installer and updated the release workflow to emit future assets with the new `claude-orchestrator-*` naming and current repository paths.
 - 2026-03-07 12:14 - Validated isolated Codex install, plan-file generation, HUD snapshot execution, installer syntax, and stale-name removal checks.
 - 2026-03-07 12:20 - Confirmed the current HUD works as a log/process snapshot but does not yet surface Codex `notify` wiring or ADL notify execution logs directly, which causes the expected hook/notify visibility gap.
+- 2026-03-07 12:28 - Identified the remaining product gap: the user expects Codex HUD to appear automatically alongside the active TUI, so the next implementation step is tmux-based auto-attach instead of manual snapshot invocation.
+- 2026-03-07 12:34 - Added market-packaged Codex wrapper scripts that create a tmux session, split a dedicated HUD pane, and attach the real Codex TUI in the main pane.
+- 2026-03-07 12:39 - Extended the installer to persist the market repo under `~/.local/share/say828-agent-market/repo`, install `~/.local/bin/codex` as the wrapper entrypoint, and preserve the real Codex binary path in `codex.env`.
+- 2026-03-07 12:41 - Validated tmux auto-attach by launching the packaged inline wrapper against a fake Codex binary and confirming a two-pane session with live HUD content in pane `0.1`.
 
 ## Validation
 
@@ -60,6 +64,9 @@
 - `HOME=<tmp> ~/.codex/skills/planning-with-files/scripts/new_plan.sh "market codex test" <tmp-repo>`
 - `HOME=<tmp> ~/.codex/skills/codex-hud/scripts/hud_snapshot.sh --repo "$PWD" --log <tmp-home>/.codex/log/missing.log --limit 2`
 - `rg -n "yourturn-|apps/hook|packages/ui|claude-maestro-linux|claude-maestro-macos|claude-maestro-windows" -S .github/workflows/release.yml scripts/install.sh README.md`
+- `timeout 3 env TMUX='' CODEX_REAL_BIN=<fake-codex> CODEX_INLINE_WORKDIR=<tmp-repo> ~/.local/share/say828-agent-market/repo/codex/bin/codex-inline-tmux.sh`
+- `tmux list-panes -t <codex-hud-session>`
+- `tmux capture-pane -p -t <codex-hud-session>:0.1`
 
 ## Risks / Follow-ups
 

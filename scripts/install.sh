@@ -4,6 +4,8 @@ set -euo pipefail
 REPO_SLUG="say828/say828-agent-market"
 INSTALL_DIR="${HOME}/.local/bin"
 CODEX_SKILLS_DIR="${HOME}/.codex/skills"
+MARKET_HOME="${HOME}/.local/share/say828-agent-market"
+MARKET_REPO_DIR="${MARKET_HOME}/repo"
 TMP_ROOT=""
 REPO_DIR=""
 INSTALL_CLAUDE=1
@@ -17,6 +19,7 @@ Usage:
 Installs:
   - Claude binary + marketplace instructions
   - Codex skills: planning-with-files, codex-hud
+  - Codex interactive wrapper with tmux HUD auto-attach
 
 Options:
   --repo-dir PATH  Use a local repository checkout instead of downloading one
@@ -158,12 +161,43 @@ install_codex_skill() {
   cp -R "${source_dir}" "${target_dir}"
 }
 
+install_codex_wrapper() {
+  local wrapper_dir="${INSTALL_DIR}"
+  local wrapper_target="${wrapper_dir}/codex"
+  local wrapper_source="${MARKET_REPO_DIR}/codex/bin/codex"
+  local inline_source="${MARKET_REPO_DIR}/codex/bin/codex-inline-tmux.sh"
+  local hud_source="${MARKET_REPO_DIR}/codex/bin/codex-hud-pane.sh"
+  local real_codex="${CODEX_REAL_BIN:-$(which -a codex | awk 'NR==1 {print; exit}')}"
+
+  mkdir -p "${wrapper_dir}" "${MARKET_HOME}"
+  rm -rf "${MARKET_REPO_DIR}"
+  mkdir -p "${MARKET_REPO_DIR}"
+  cp -R "${REPO_DIR}/." "${MARKET_REPO_DIR}/"
+  chmod +x "${wrapper_source}" "${inline_source}" "${hud_source}"
+
+  if [[ -e "${wrapper_target}" && ! -L "${wrapper_target}" ]]; then
+    mv "${wrapper_target}" "${wrapper_target}.say828-agent-market-backup"
+  elif [[ -L "${wrapper_target}" ]]; then
+    rm -f "${wrapper_target}"
+  fi
+
+  ln -s "${wrapper_source}" "${wrapper_target}"
+
+  if [[ -n "${real_codex}" ]]; then
+    cat > "${MARKET_HOME}/codex.env" <<EOF
+CODEX_REAL_BIN=${real_codex}
+EOF
+  fi
+}
+
 install_codex_skills() {
   ensure_repo_checkout
   echo "Installing Codex skills into ${CODEX_SKILLS_DIR}..."
   install_codex_skill "planning-with-files"
   install_codex_skill "codex-hud"
+  install_codex_wrapper
   echo "Installed Codex skills: planning-with-files, codex-hud"
+  echo "Installed Codex wrapper: ${INSTALL_DIR}/codex"
 }
 
 main() {
