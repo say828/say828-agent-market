@@ -1,33 +1,41 @@
-# Claude Code Marketplace
+# say828 Agent Market
 
-Claude Code 플러그인 마켓플레이스입니다.
+Codex, Claude, 그리고 앞으로 추가될 agent runtime 플러그인을 한곳에서 관리하는 중앙 마켓 레포입니다.
 
 ## 마켓플레이스 추가
 
 ```bash
-/plugin marketplace add say828/say828-claude-market
+/plugin marketplace add say828/say828-agent-market
 ```
 
 추가 후 플러그인 설치:
 
 ```bash
-# claude-maestro 설치
-/plugin install claude-maestro@say828-claude-market
+# claude-orchestrator 설치
+/plugin install claude-orchestrator@say828-agent-market
 
 # ship 설치
-/plugin install ship@say828-claude-market
+/plugin install ship@say828-agent-market
 ```
 
-## 플러그인 목록
+## 방향
+
+- Claude Code 플러그인 마켓
+- Codex 런타임용 플러그인과 어댑터 허브
+- 공통 agent workflow, UI, 패키지, 설치 스크립트를 함께 관리하는 모노레포
+
+현재 이 레포는 Claude marketplace 인터페이스를 제공하고 있으며, Codex와 기타 agent runtime 플러그인도 같은 레포에서 계속 추가할 수 있도록 운영합니다.
+
+## 현재 플러그인
 
 | 플러그인 | 설명 |
 |----------|------|
-| **claude-maestro** | Browser-based human-in-the-loop UI for Claude Code |
+| **claude-orchestrator** | Browser-based multi-session management UI for Claude Code |
 | **ship** | PR 분할 및 자동 생성 워크플로우 도구 |
 
 ---
 
-## claude-maestro
+## claude-orchestrator
 
 Browser-based human-in-the-loop UI for Claude Code. 모든 상호작용을 웹 UI로 처리합니다.
 
@@ -46,11 +54,11 @@ Browser-based human-in-the-loop UI for Claude Code. 모든 상호작용을 웹 U
 
 ```bash
 # 1. 바이너리 설치 (최초 1회)
-curl -fsSL https://raw.githubusercontent.com/say828/say828-claude-market/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/say828/say828-agent-market/main/scripts/install.sh | bash
 
 # 2. 플러그인 설치
-/plugin marketplace add say828/say828-claude-market
-/plugin install claude-maestro@say828-claude-market
+/plugin marketplace add say828/say828-agent-market
+/plugin install claude-orchestrator@say828-agent-market
 ```
 
 > **Note:** `~/.local/bin`이 PATH에 있어야 합니다.
@@ -80,7 +88,7 @@ PR 크기 기준 자동 분할과 순차 PR 생성을 자동화하는 Git 워크
 ### 설치
 
 ```bash
-/plugin install ship@say828-claude-market
+/plugin install ship@say828-agent-market
 ```
 
 ### 명령어
@@ -126,8 +134,8 @@ bun install
 # UI 빌드
 bun run build:ui
 
-# Hook 빌드
-bun run build:hook
+# Orchestrator 빌드
+bun run build:orchestrator
 
 # 전체 빌드
 bun run build
@@ -139,14 +147,14 @@ bun run build:release
 ## 프로젝트 구조
 
 ```
-say828-claude-market/
-├── apps/hook/          # claude-maestro CLI 바이너리
+say828-agent-market/
+├── apps/orchestrator/  # claude-orchestrator CLI 바이너리
 ├── packages/
-│   ├── server/         # HTTP 서버 라이브러리
-│   └── ui/             # React SPA (Vite)
+│   ├── server/         # 공통 서버 라이브러리
+│   └── orchestrator-ui/ # React SPA (Vite)
 ├── plugins/
-│   └── ship/           # ship 플러그인
-└── .claude-plugin/     # 마켓플레이스 설정
+│   └── ship/           # Claude 플러그인
+└── .claude-plugin/     # Claude 마켓플레이스 설정
 ```
 
 ## 라이선스

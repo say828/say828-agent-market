@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Multi-session Claude Code orchestrator with web UI for monitoring and managing sessions",
   "author": "say828",
-  "repository": "https://github.com/say828/claude-market",
+  "repository": "https://github.com/say828/say828-agent-market",
   "keywords": ["orchestrator", "multi-session", "monitoring", "web-ui"],
   "commands": ["orchestrator"],
   "hooks": ["PreToolUse", "PostToolUse", "SessionStart"]

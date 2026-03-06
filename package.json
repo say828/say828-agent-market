@@ -1,5 +1,5 @@
 {
-  "name": "claude-orchestrator-monorepo",
+  "name": "say828-agent-market-monorepo",
   "private": true,
   "workspaces": [
     "apps/*",

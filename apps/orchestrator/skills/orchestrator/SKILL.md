@@ -44,12 +44,12 @@ When the user invokes `/orchestrator`:
 
 1. **Start the server** using Bash:
    ```bash
-   cd /Users/say/Documents/GitHub/say828-claude-market && bun run --cwd apps/orchestrator dev &
+   cd /Users/say/Documents/GitHub/say828-agent-market && bun run --cwd apps/orchestrator dev &
    ```
 
    Or if using the installed binary:
    ```bash
-   ~/.claude/plugins/cache/say828-claude-market/claude-orchestrator/*/dist/claude-orchestrator-macos-arm64 &
+   ~/.claude/plugins/cache/say828-agent-market/claude-orchestrator/*/dist/claude-orchestrator-macos-arm64 &
    ```
 
 2. **Wait a moment** for the server to start (1-2 seconds)
