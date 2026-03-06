@@ -4,11 +4,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  hud_snapshot.sh [--repo PATH] [--log PATH] [--limit N] [--session ID|latest] [--watch SEC]
+  hud_snapshot.sh [--repo PATH] [--log PATH] [--notify-log PATH] [--limit N] [--session ID|latest] [--watch SEC]
 
 Options:
   --repo      Target repository path (default: current directory)
   --log       Codex log path (default: $HOME/.codex/log/codex-tui.log)
+  --notify-log ADL/Codex notify log path (default: $HOME/.autonomous-decision-loop/codex/notify.log)
   --limit     Number of recent events to print (default: 20)
   --session   Session thread_id or "latest" (default: latest)
   --watch     Refresh every N seconds until interrupted
@@ -18,6 +19,7 @@ EOF
 
 repo="$(pwd)"
 log_path="${HOME}/.codex/log/codex-tui.log"
+notify_log_path="${HOME}/.autonomous-decision-loop/codex/notify.log"
 limit=20
 session="latest"
 watch_interval=0
@@ -30,6 +32,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --log)
       log_path="${2:-}"
+      shift 2
+      ;;
+    --notify-log)
+      notify_log_path="${2:-}"
       shift 2
       ;;
     --limit)
@@ -142,6 +148,12 @@ print_runtime() {
 
   echo "model=${model:-unknown}"
   echo "reasoning_effort=${effort:-unknown}"
+  if [[ -f "$config_path" ]]; then
+    notify_cmd="$(sed -n 's/^notify[[:space:]]*=[[:space:]]*\(.*\)$/\1/p' "$config_path" | head -n 1)"
+    echo "notify=${notify_cmd:-unset}"
+  else
+    echo "notify=unknown"
+  fi
 
   if git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     branch="$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
@@ -186,6 +198,18 @@ print_recent_events() {
   printf '%s\n' "$events" | redact | trim_lines
 }
 
+print_notify_events() {
+  section "Notify Execution Trace"
+  echo "notify_log=${notify_log_path}"
+
+  if [[ ! -f "$notify_log_path" ]]; then
+    echo "notify_events=none"
+    return
+  fi
+
+  tail -n "$limit" "$notify_log_path" | redact | trim_lines
+}
+
 print_limits() {
   section "Visibility Limits"
   cat <<'EOF'
@@ -200,6 +224,7 @@ render_snapshot() {
   print_instruction_surfaces
   print_runtime
   print_recent_events
+  print_notify_events
   print_limits
 }
 

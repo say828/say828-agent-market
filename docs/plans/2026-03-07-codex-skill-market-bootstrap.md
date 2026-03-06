@@ -45,6 +45,7 @@
 - 2026-03-07 12:08 - Updated README to document Codex install flow, skill inventory, usage entrypoints, and the expanded project structure.
 - 2026-03-07 12:11 - Added legacy Claude release asset fallback to the installer and updated the release workflow to emit future assets with the new `claude-orchestrator-*` naming and current repository paths.
 - 2026-03-07 12:14 - Validated isolated Codex install, plan-file generation, HUD snapshot execution, installer syntax, and stale-name removal checks.
+- 2026-03-07 12:20 - Confirmed the current HUD works as a log/process snapshot but does not yet surface Codex `notify` wiring or ADL notify execution logs directly, which causes the expected hook/notify visibility gap.
 
 ## Validation
 
